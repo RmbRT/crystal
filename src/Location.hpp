@@ -7,9 +7,9 @@ namespace crystal
 	enum class Location
 	{
 		/** The host machine. */
-		kMachine,
-		/** Machines in the local area network. */
 		kLocal,
+		/** Machines in the local area network. */
+		kArea,
 		/** Machines outside the local are network. */
 		kOutside
 	};
