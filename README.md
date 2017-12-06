@@ -65,15 +65,14 @@ If one wants to prepare computations for the next loop while the current loop is
 
 ```cpp
 
-	Paralleliser parallel; // the thread pool.
 	util::Barrier next_loop{1}; // barrier waiting for 1 event.
 
-	parallel.execute(
+	Paralleliser::execute(
 		prepare_next_loop, // the function to execute.
 		&next_loop, // notify the barrier after execution is done.
 		true); // force asynchronous execution.
 
-	parallel.loop(
+	Paralleliser::loop(
 		0, 100, // 100 iterations, starting at 0.
 		1, // chunk size.
 		[](std::size_t i) { first_loop(data[i]); }); // iteration function.
@@ -81,7 +80,7 @@ If one wants to prepare computations for the next loop while the current loop is
 	next_loop.wait(); // wait for preparations of the next loop to finish.
 
 	// run the next loop.
-	parallel.loop(
+	Paralleliser::loop(
 		0, 100,
 		0, // dynamic chunk size.
 		[](std::size_t i) { do_something(prepared_data[i]); });
