@@ -1,0 +1,3 @@
+[submodule "depend/Lock"]
+	path = depend/Lock
+	url = https://github.com/RmbRT/Lock
