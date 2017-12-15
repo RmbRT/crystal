@@ -1,18 +1,18 @@
-#ifndef __crystal_local_machine_hpp_defined
-#define __crystal_local_machine_hpp_defined
+#ifndef __crystal_self_machine_hpp_defined
+#define __crystal_self_machine_hpp_defined
 
 #include "../Machine.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
-	/** Representation of the local machine. */
+	/** Representation of the host machine. */
 	class Machine : public crystal::Machine
 	{
 	public:
-		/** Creates an uninitialised local machine. */
+		/** Creates an uninitialised host machine. */
 		Machine();
 
-		/** Creates a local machine with the given communication latency.
+		/** Creates a host machine with the given communication latency.
 		@param[in] computation_seq:
 			The sequential computation latency.
 		@param[in] computation_par:
@@ -26,6 +26,9 @@ namespace crystal::local
 			std::size_t data,
 			std::size_t seq,
 			std::size_t par) override;
+
+		/** The host machine's byte order. */
+		static constexpr std::uint64_t byte_order();
 	};
 }
 

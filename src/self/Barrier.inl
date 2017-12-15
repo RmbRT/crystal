@@ -1,5 +1,5 @@
 #include <thread>
-namespace crystal::local
+namespace crystal::self
 {
 	Barrier::Barrier(
 		std::size_t counter):

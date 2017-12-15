@@ -1,11 +1,11 @@
-#ifndef __crystal_local_job_hpp_defined
-#define __crystal_local_job_hpp_defined
+#ifndef __crystal_self_job_hpp_defined
+#define __crystal_self_job_hpp_defined
 
 #include "Barrier.hpp"
 
 #include <functional>
 
-namespace crystal::local
+namespace crystal::self
 {
 	/** Job function type. */
 	typedef std::function<void(void)> job_fn_t;

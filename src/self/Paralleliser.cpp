@@ -1,6 +1,6 @@
 #include "Paralleliser.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
 	Paralleliser Paralleliser::s_instance;
 

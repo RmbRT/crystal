@@ -1,3 +1,6 @@
 [submodule "depend/Lock"]
 	path = depend/Lock
 	url = https://github.com/RmbRT/Lock
+[submodule "depend/netlib"]
+	path = depend/netlib
+	url = https://github.com/RmbRT/netlib

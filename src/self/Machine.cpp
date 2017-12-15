@@ -1,9 +1,9 @@
 #include "Machine.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
 	Machine::Machine():
-		crystal::Machine(Location::kLocal)
+		crystal::Machine(Location::kSelf)
 	{
 	}
 
@@ -11,8 +11,8 @@ namespace crystal::local
 		util::latency_t computation_seq,
 		util::latency_t computation_par):
 		crystal::Machine(
-			Location::kLocal,
-			0, // no communication time for local machines.
+			Location::kSelf,
+			0, // no communication to self.
 			computation_seq,
 			computation_par)
 	{

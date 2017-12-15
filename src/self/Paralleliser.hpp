@@ -1,5 +1,5 @@
-#ifndef __crystal_local_paralleliser_hpp_defined
-#define __crystal_local_paralleliser_hpp_defined
+#ifndef __crystal_self_paralleliser_hpp_defined
+#define __crystal_self_paralleliser_hpp_defined
 
 #include <thread>
 #include <type_traits>
@@ -9,7 +9,7 @@
 #include "ExecutionUnit.hpp"
 #include "Job.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
 	template<class Fn, class ...Args>
 	/** Return type of a chunk loop function. */

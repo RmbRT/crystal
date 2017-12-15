@@ -3,14 +3,18 @@
 
 namespace crystal
 {
-	/** An execution location. */
+	/** An machine's location.
+		This determines the level of trust a machine is given and whether communication is required to reach the machine. */
 	enum class Location
 	{
-		/** The host machine. */
+		/** The host machine.
+			Requires no communication and has absolute trust. */
+		kSelf,
+		/** Machines in the local area network.
+			Requires communication and has absolute trust. */
 		kLocal,
-		/** Machines in the local area network. */
-		kArea,
-		/** Machines outside the local are network. */
+		/** Machines outside the local are network.
+			Requires communication and is not trusted. */
 		kOutside
 	};
 }

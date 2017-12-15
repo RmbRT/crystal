@@ -1,9 +1,9 @@
-#ifndef __crystal_local_barrier_hpp_defined
-#define __crystal_local_barrier_hpp_defined
+#ifndef __crystal_self_barrier_hpp_defined
+#define __crystal_self_barrier_hpp_defined
 
 #include <atomic>
 
-namespace crystal::local
+namespace crystal::self
 {
 	/** Synchronisation barrier. */
 	class Barrier

@@ -1,6 +1,6 @@
 #include "ExecutionUnit.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
 	ExecutionUnit::ExecutionUnit():
 		m_handle(),

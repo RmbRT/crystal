@@ -3,7 +3,7 @@
 #include <random>
 
 #include <iostream>
-#include "local/Paralleliser.hpp"
+#include "self/Paralleliser.hpp"
 
 namespace crystal
 {
@@ -66,12 +66,12 @@ namespace crystal
 	{
 		std::uint32_t const base = std::mt19937(seed)();
 
-		return local::Paralleliser::atomic_reduce_loop(
+		return self::Paralleliser::atomic_reduce_loop(
 			0, count,
 			0,
 			[base, n](std::size_t i)->std::uint32_t {
 				return Machine::benchmark_seq(base + i, n);
 			},
-			0, local::sum);
+			0, self::sum);
 	}
 }

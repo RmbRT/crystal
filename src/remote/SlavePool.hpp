@@ -6,13 +6,12 @@
 
 namespace crystal
 {
+	/** */
 	class SlavePool
 	{
-		local::Paralleliser m_local;
+		/** The slaves. */
+		std::vector<Slave> m_slaves;
 	public:
-		void execute(
-			Location locality,
-			Job &job);
 	};
 }
 

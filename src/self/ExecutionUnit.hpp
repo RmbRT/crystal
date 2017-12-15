@@ -1,5 +1,5 @@
-#ifndef __crystal_local_executionunit_hpp_defined
-#define __crystal_local_executionunit_hpp_defined
+#ifndef __crystal_self_executionunit_hpp_defined
+#define __crystal_self_executionunit_hpp_defined
 
 #include "Job.hpp"
 
@@ -8,7 +8,7 @@
 #include <thread>
 #include <Lock/Lock.hpp>
 
-namespace crystal::local
+namespace crystal::self
 {
 	class ExecutionUnit
 	{

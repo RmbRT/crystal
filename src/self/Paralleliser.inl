@@ -1,6 +1,6 @@
 #include <atomic>
 
-namespace crystal::local
+namespace crystal::self
 {
 	std::size_t Paralleliser::hardware_concurrency()
 	{

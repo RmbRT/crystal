@@ -1,6 +1,6 @@
 #include "Job.hpp"
 
-namespace crystal::local
+namespace crystal::self
 {
 	void Job::execute()
 	{

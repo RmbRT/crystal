@@ -1,4 +1,4 @@
-namespace crystal::local
+namespace crystal::self
 {
 	Job::Job(
 		job_fn_t job_fn):
