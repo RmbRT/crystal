@@ -7,7 +7,7 @@ add_subdirectory(depend/netlib)
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wfatal-errors -g")
 
 # Add Lock library include path.
-include_directories(depend/Lock/include)
+include_directories(include)
 
 # Select all source files.
 file(GLOB_RECURSE crystal_sources ./src/*.cpp)

@@ -6,7 +6,7 @@
 
 namespace crystal
 {
-	/** */
+	/**  */
 	class SlavePool
 	{
 		/** The slaves. */

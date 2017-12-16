@@ -21,6 +21,7 @@ namespace crystal::self
 	auto const sum = [](auto &acc, auto val) { acc += val; };
 	auto const product = [](auto &acc, auto val) { acc *= val; };
 
+	/** Thread pool. */
 	class Paralleliser
 	{
 		/** To efficiently check for available jobs. */

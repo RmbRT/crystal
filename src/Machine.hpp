@@ -10,7 +10,6 @@
 
 namespace crystal
 {
-
 	/** A known machine. */
 	class Machine
 	{

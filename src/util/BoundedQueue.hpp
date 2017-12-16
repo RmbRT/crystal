@@ -6,7 +6,9 @@
 namespace crystal::util
 {
 	template<class T>
-	/** A queue with an upper size boundary. */
+	/** A queue with an upper size boundary.
+	@tparam T:
+		The queued type. */
 	class BoundedQueue
 	{
 		/** The queue. */
@@ -25,6 +27,7 @@ namespace crystal::util
 		/** @return Whether the queue is empty. */
 		inline bool empty() const;
 
+		/** @return The queue's size limit. */
 		inline std::size_t limit() const;
 
 		/** Reserves space in the queue.
