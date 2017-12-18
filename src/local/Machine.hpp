@@ -15,12 +15,6 @@ namespace crystal::local
 
 		using remote::Machine::send;
 		using remote::Machine::receive;
-
-		bool check_latencies(
-			std::uint32_t seed,
-			std::size_t data,
-			std::size_t seq,
-			std::size_t par) override;
 	};
 }
 
