@@ -40,7 +40,7 @@ namespace crystal::remote
 		if(receive(&compressed, sizeof(util::CompressedByteOrder)))
 		{
 			m_byte_order = compressed;
-			return true;
+			return m_byte_order.validate();
 		} else
 			return false;
 	}

@@ -9,11 +9,12 @@
 namespace crystal::remote
 {
 	/** A machine other than the host machine. */
-	class Machine : public crystal::Machine, private netlib::x::Connection
+	class Machine : public crystal::Machine, public netlib::x::Connection
 	{
 		/** The machine's byte order. */
 		util::ByteOrder m_byte_order;
 	public:
+
 		/** Creates a remote machine from an incoming connection.
 		@param[in] location:
 			The machine's location. Must be either `Location::kArea` or `Location::kOutside`.

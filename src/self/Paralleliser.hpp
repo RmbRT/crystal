@@ -20,6 +20,8 @@ namespace crystal::self
 
 	auto const sum = [](auto &acc, auto val) { acc += val; };
 	auto const product = [](auto &acc, auto val) { acc *= val; };
+	auto const conjunction = [](auto &acc, auto val) { if(!val) acc = false; };
+	auto const disjunction = [](auto &acc, auto val) { if(val) acc = true; };
 
 	/** Thread pool. */
 	class Paralleliser

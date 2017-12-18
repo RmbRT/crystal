@@ -111,4 +111,35 @@ namespace crystal::util
 
 		return out;
 	}
+
+	static inline bool validate(
+		void const * v,
+		std::size_t n)
+	{
+		std::uint8_t const * in = reinterpret_cast<std::uint8_t const *>(v);
+
+		std::uint8_t flags = (1 << n) - 1;
+
+		for(std::size_t i = 0; i < n; i++)
+		{
+			if(in[i] >= 4)
+				return false;
+
+			if(flags & (1<<in[i]))
+				flags &= ~(1<<in[i]);
+			else
+				return false;
+		}
+
+		return flags == 0;
+	}
+
+	bool ByteOrder::validate() const
+	{
+		return util::validate(&m_order_double, 8)
+			&& util::validate(&m_order_64, 8)
+			&& util::validate(&m_order_float, 4)
+			&& util::validate(&m_order_32, 4)
+			&& util::validate(&m_order_16, 2);
+	}
 }

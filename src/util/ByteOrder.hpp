@@ -14,10 +14,10 @@ namespace crystal::util
 		/** The compressed byte order for 64 bit integers. */
 		std::uint8_t order_64[3];
 		// 4 * 2 bits (log2(4) = 2).
-		/** The compressed byte order for 32 bit integers. */
-		std::uint8_t order_32[1];
 		/** The compressed byte order for floats. */
 		std::uint8_t order_float[1];
+		/** The compressed byte order for 32 bit integers. */
+		std::uint8_t order_32[1];
 		// 2 * 1 bit (log2(2) = 1).
 		/** The compressed byte order for 16 bit integers. */
 		std::uint8_t order_16[1];
@@ -87,6 +87,11 @@ namespace crystal::util
 		/** Converts a double. */
 		inline double convert_double(
 			double v) const;
+
+		/** Validates a byte order.
+		@return
+			Whether every byte order is valid. */
+		bool validate() const;
 	};
 }
 
