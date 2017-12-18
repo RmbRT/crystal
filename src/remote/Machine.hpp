@@ -9,11 +9,12 @@
 namespace crystal::remote
 {
 	/** A machine other than the host machine. */
-	class Machine : public crystal::Machine, public netlib::x::Connection
+	class Machine : public crystal::Machine, protected netlib::x::Connection
 	{
 		/** The machine's byte order. */
 		util::ByteOrder m_byte_order;
 	public:
+		Machine(Machine&&) = default;
 
 		/** Creates a remote machine from an incoming connection.
 		@param[in] location:
@@ -32,6 +33,10 @@ namespace crystal::remote
 		Machine(
 			Location location,
 			netlib::SocketAddress const& address);
+
+		virtual ~Machine() = 0;
+
+		using netlib::x::Connection::exists;
 
 		/** The machine's byte order. */
 		inline util::ByteOrder const& byte_order() const;

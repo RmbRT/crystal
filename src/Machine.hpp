@@ -18,11 +18,6 @@ namespace crystal
 		/** Creates a machine at the given location. */
 		Machine(
 			Location location);
-		/** Creates a machine at the given location and with the given latencies.
-		@param[in] location:
-			The machine's location. */
-		Machine(
-			Location location);
 
 		virtual ~Machine() = 0;
 

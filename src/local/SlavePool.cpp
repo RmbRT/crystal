@@ -3,10 +3,14 @@
 
 namespace crystal::local
 {
-	Machine SlavePool::accept()
+	bool SlavePool::accept()
 	{
-		return Machine(
-			netlib::x::ConnectionListener::accept());
+		if(netlib::x::Connection conn = netlib::x::ConnectionListener::accept())
+		{
+			m_slaves.emplace_back(std::move(conn));
+			return true;
+		} else
+			return false;
 	}
 
 	bool SlavePool::broadcast(

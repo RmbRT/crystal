@@ -28,6 +28,8 @@ namespace crystal::remote
 			throw std::runtime_error("Failed to exchange byte order.");
 	}
 
+	Machine::~Machine() = default;
+
 	bool Machine::send_byte_order()
 	{
 		util::CompressedByteOrder compressed = util::ByteOrder::self().compress();

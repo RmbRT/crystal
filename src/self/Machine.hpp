@@ -2,6 +2,7 @@
 #define __crystal_self_machine_hpp_defined
 
 #include "../Machine.hpp"
+#include "../util/ByteOrder.hpp"
 
 namespace crystal::self
 {
@@ -11,9 +12,6 @@ namespace crystal::self
 	public:
 		/** Creates an uninitialised host machine. */
 		Machine();
-
-		/** The host machine's byte order. */
-		static constexpr std::uint64_t byte_order();
 	};
 }
 
