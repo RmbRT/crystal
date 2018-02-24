@@ -15,10 +15,19 @@ namespace crystal::self
 		inline Barrier(
 			std::size_t counter);
 
-		/** Decreases the counter. */
-		inline void notify();
-		/** Waits until the counter is 0. */
-		inline void wait();
+		/** Decreases the counter.
+			Performs either a release operation or a relaxed operation.
+		@param[in] release:
+			Whether to perform a release operation. */
+		inline void notify(
+			bool release = false);
+
+		/** Waits until the counter is 0.
+			Performs either an acquire operation or a relaxed operation.
+		@param[in] acquire:
+			Whether to perform an acquire operation. */
+		inline void wait(
+			bool acquire = false);
 	};
 }
 

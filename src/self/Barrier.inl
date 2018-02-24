@@ -7,14 +7,24 @@ namespace crystal::self
 	{
 	}
 
-	void Barrier::notify()
+	void Barrier::notify(
+		bool release)
 	{
-		m_counter.fetch_sub(1, std::memory_order_relaxed);
+		std::memory_order const& memory_order = acquire
+			? std::memory_order_acquire
+			: std::memory_order_relaxed;
+
+		m_counter.fetch_sub(1, memory_order);
 	}
 
-	void Barrier::wait()
+	void Barrier::wait(
+		bool acquire)
 	{
-		while(m_counter.load(std::memory_order_relaxed))
+		std::memory_order const& memory_order = acquire
+			? std::memory_order_acquire
+			: std::memory_order_relaxed;
+
+		while(m_counter.load(memory_order))
 			std::this_thread::yield();
 	}
 }
