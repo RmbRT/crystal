@@ -12,4 +12,5 @@ namespace crystal
 		m_location(location)
 	{
 	}
+	Machine::~Machine() = default;
 }

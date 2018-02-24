@@ -10,7 +10,7 @@ namespace crystal::self
 	void Barrier::notify(
 		bool release)
 	{
-		std::memory_order const& memory_order = acquire
+		std::memory_order const& memory_order = release
 			? std::memory_order_acquire
 			: std::memory_order_relaxed;
 

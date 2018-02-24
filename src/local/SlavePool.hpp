@@ -18,6 +18,7 @@ namespace crystal::local
 		using netlib::x::ConnectionListener::listening;
 		using netlib::x::ConnectionListener::listen;
 		using netlib::x::ConnectionListener::pending;
+		using netlib::x::ConnectionListener::unlisten;
 
 		/** Accepts a new machine into the slave pool.
 			Blocks until a connection is pending.

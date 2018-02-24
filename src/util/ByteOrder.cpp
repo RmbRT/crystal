@@ -1,21 +1,37 @@
 #include "ByteOrder.hpp"
-#include <bitset>
+#include <cstring>
 
 namespace crystal::util
 {
+	inline void set_bit(
+		void * bytes,
+		std::size_t bit,
+		bool value)
+	{
+		if(value)
+			reinterpret_cast<std::uint8_t *>(bytes)[bit>>3] |= 1<<(bit&7);
+		else
+			reinterpret_cast<std::uint8_t *>(bytes)[bit>>3] &= ~(1<<(bit&7));
+	}
+
+	inline bool get_bit(
+		void const * bytes,
+		std::size_t bit)
+	{
+		return reinterpret_cast<std::uint8_t const *>(bytes)[bit>>3] & (1<<(bit&7));
+	}
+
 	static inline void inflate64(
 		std::uint8_t const * in,
 		void * out)
 	{
-		std::bitset<24> const * _in = reinterpret_cast<std::bitset<24> const *>(in);
-		std::bitset<64> * _out = static_cast<std::bitset<64> *>(out);
-		_out->reset();
+		std::memset(out, 0, 8);
 
 		for(std::size_t group = 0; group < 8; group++)
 		{
-			_out->set(8*group, _in->test(3 * group));
-			_out->set(8*group + 1, _in->test(3 * group + 1));
-			_out->set(8*group + 2, _in->test(3 * group + 2));
+			set_bit(out, 8*group, get_bit(in, 3*group));
+			set_bit(out, 8*group + 1, get_bit(in, 3*group + 1));
+			set_bit(out, 8*group + 2, get_bit(in, 3*group + 2));
 		}
 	}
 
@@ -23,14 +39,11 @@ namespace crystal::util
 		std::uint8_t const * in,
 		void * out)
 	{
-		std::bitset<8> const * _in = reinterpret_cast<std::bitset<8> const *>(in);
-		std::bitset<32> * _out = static_cast<std::bitset<32> *>(out);
-		_out->reset();
-
+		std::memset(out, 0, 4);
 		for(std::size_t group = 0; group < 4; group++)
 		{
-			_out->set(8*group, _in->test(2 * group));
-			_out->set(8*group + 1, _in->test(2 * group + 1));
+			set_bit(out, 8*group, get_bit(in, 2 * group));
+			set_bit(out, 8*group + 1, get_bit(in, 2 * group + 1));
 		}
 	}
 
@@ -38,12 +51,9 @@ namespace crystal::util
 		std::uint8_t const * in,
 		void * out)
 	{
-		std::bitset<2> const * _in = reinterpret_cast<std::bitset<2> const *>(in);
-		std::bitset<16> * _out = static_cast<std::bitset<16> *>(out);
-		_out->reset();
-
+		std::memset(out, 0, 2);
 		for(std::size_t group = 0; group < 2; group++)
-			_out->set(8*group, _in->test(group));
+			set_bit(out, 8*group, get_bit(in, group));
 	}
 
 	ByteOrder::ByteOrder(
@@ -62,14 +72,11 @@ namespace crystal::util
 		void const * in,
 		std::uint8_t * out)
 	{
-		std::bitset<64> const * _in = reinterpret_cast<std::bitset<64> const *>(in);
-		std::bitset<24> * _out = reinterpret_cast<std::bitset<24> *>(out);
-
 		for(std::size_t group = 0; group < 8; group++)
 		{
-			_out->set(3*group, _in->test(8*group));
-			_out->set(3*group + 1, _in->test(8*group + 1));
-			_out->set(3*group + 2, _in->test(8*group + 2));
+			set_bit(out, 3*group, get_bit(in, 8*group));
+			set_bit(out, 3*group + 1, get_bit(in, 8*group + 1));
+			set_bit(out, 3*group + 2, get_bit(in, 8*group + 2));
 		}
 	}
 
@@ -77,13 +84,10 @@ namespace crystal::util
 		void const * in,
 		std::uint8_t * out)
 	{
-		std::bitset<32> const * _in = reinterpret_cast<std::bitset<32> const *>(in);
-		std::bitset<8> * _out = reinterpret_cast<std::bitset<8> *>(out);
-
 		for(std::size_t group = 0; group < 4; group++)
 		{
-			_out->set(2*group, _in->test(8*group));
-			_out->set(2*group + 1, _in->test(8*group + 1));
+			set_bit(out, 2*group, get_bit(in, 8*group));
+			set_bit(out, 2*group + 1, get_bit(in, 8*group + 1));
 		}
 	}
 
@@ -91,11 +95,8 @@ namespace crystal::util
 		void const * in,
 		std::uint8_t * out)
 	{
-		std::bitset<16> const * _in = reinterpret_cast<std::bitset<16> const *>(in);
-		std::bitset<2> * _out = reinterpret_cast<std::bitset<2> *>(out);
-
 		for(std::size_t group = 0; group < 2; group++)
-			_out->set(group, _in->test(8*group));
+			set_bit(out, group, get_bit(in, 8*group));
 	}
 
 	CompressedByteOrder ByteOrder::compress() const
@@ -122,13 +123,11 @@ namespace crystal::util
 
 		for(std::size_t i = 0; i < n; i++)
 		{
-			if(in[i] >= 4)
+			if(in[i] >= n
+			|| !(flags & (1<<in[i])))
 				return false;
 
-			if(flags & (1<<in[i]))
-				flags &= ~(1<<in[i]);
-			else
-				return false;
+			flags &= ~(1<<in[i]);
 		}
 
 		return flags == 0;

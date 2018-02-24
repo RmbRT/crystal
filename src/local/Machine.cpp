@@ -9,4 +9,12 @@ namespace crystal::local
 			std::move(connection))
 	{
 	}
+
+	Machine::Machine(
+		netlib::SocketAddress const& address):
+		remote::Machine(
+			Location::kLocal,
+			address)
+	{
+	}
 }

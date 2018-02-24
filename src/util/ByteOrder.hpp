@@ -2,6 +2,7 @@
 #define __crystal_util_byteorder_hpp_defined
 
 #include <cinttypes>
+#include <cstddef>
 
 namespace crystal::util
 {
@@ -21,6 +22,9 @@ namespace crystal::util
 		// 2 * 1 bit (log2(2) = 1).
 		/** The compressed byte order for 16 bit integers. */
 		std::uint8_t order_16[1];
+
+		/** The size of the structure. */
+		static constexpr std::size_t size();
 	};
 
 	/** Represents a machine's byte order.

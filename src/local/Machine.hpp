@@ -5,7 +5,8 @@
 
 namespace crystal::local
 {
-	/** A machine in the local network. */
+	/** A trusted machine in the local network.
+		This machine does not need encryption. */
 	class Machine : public remote::Machine
 	{
 	public:
@@ -14,6 +15,7 @@ namespace crystal::local
 			The connection to the local machine. */
 		Machine(
 			netlib::x::Connection && connection);
+
 		/** Connects to a local machine.
 		@param[in] address:
 			The local machine's address. */

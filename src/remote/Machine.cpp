@@ -1,5 +1,6 @@
 #include "Machine.hpp"
 #include <stdexcept>
+#include <cassert>
 
 namespace crystal::remote
 {
@@ -11,8 +12,10 @@ namespace crystal::remote
 		netlib::x::Connection(std::move(connection)),
 		m_byte_order()
 	{
-		if(!send_byte_order() || !receive_byte_order())
-			throw std::runtime_error("Failed to exchange byte order.");
+		if(!send_byte_order())
+			throw std::runtime_error("Failed to send byte order.");
+		else if(!receive_byte_order())
+			throw std::runtime_error("Failed to receive byte order.");
 	}
 
 	Machine::Machine(
@@ -20,12 +23,14 @@ namespace crystal::remote
 		netlib::SocketAddress const& address):
 		crystal::Machine(
 			location),
-		netlib::x::Connection()
+		netlib::x::Connection(netlib::StreamSocket(address.family))
 	{
 		if(!netlib::x::Connection::connect(address))
 			throw std::runtime_error("Connection failed.");
-		if(!receive_byte_order() || !send_byte_order())
-			throw std::runtime_error("Failed to exchange byte order.");
+		if(!receive_byte_order())
+			throw std::runtime_error("Failed to receive byte order.");
+		else if(!send_byte_order())
+			throw std::runtime_error("Failed to send byte order.");
 	}
 
 	Machine::~Machine() = default;
@@ -33,16 +38,17 @@ namespace crystal::remote
 	bool Machine::send_byte_order()
 	{
 		util::CompressedByteOrder compressed = util::ByteOrder::self().compress();
-		return send(&compressed, sizeof(util::CompressedByteOrder));
+		return send(&compressed, util::CompressedByteOrder::size());
 	}
 
 	bool Machine::receive_byte_order()
 	{
 		util::CompressedByteOrder compressed;
-		if(receive(&compressed, sizeof(util::CompressedByteOrder)))
+		if(receive(&compressed, util::CompressedByteOrder::size()))
 		{
 			m_byte_order = compressed;
-			return m_byte_order.validate();
+			assert(m_byte_order.validate());
+			return true;
 		} else
 			return false;
 	}
