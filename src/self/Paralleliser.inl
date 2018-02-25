@@ -40,7 +40,7 @@ namespace crystal::self
 		std::size_t distribute = iterations % jobs;
 
 		// Create the synchronisation barrier.
-		Barrier barrier{jobs};
+		Barrier barrier{jobs, false};
 
 		// so that the new job size doesn't have to be recalculated.
 		std::size_t const inc_job_size = job_size + 1;
