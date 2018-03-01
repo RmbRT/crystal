@@ -37,6 +37,9 @@ namespace crystal::self
 	public:
 		Paralleliser();
 
+		// Must not be moved.
+		Paralleliser(Paralleliser&&) = delete;
+
 		template<class Callable, class...Args>
 		/** Parallelises a loop of known iteration count.
 			Blocks until the loop was completely executed.

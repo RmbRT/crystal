@@ -39,12 +39,23 @@ namespace crystal::self
 		lock::ThreadSafe<util::BoundedQueue<Job>> * jobs,
 		std::atomic_size_t * available_jobs)
 	{
+		// the number of failed spins before sleeping.
+		static std::size_t const k_sleep_fails = 1000;
+		// the sleep duration in microseconds.
+		static std::size_t const k_sleep_us = 100;
+
+		std::size_t fails = 0;
 		Job job;
 		while(!unit->m_should_stop.load(std::memory_order_relaxed))
 		{
 			if(!available_jobs->load(std::memory_order_relaxed))
 			{
-				std::this_thread::yield();
+				++fails;
+				if(fails < k_sleep_fails)
+					std::this_thread::yield();
+				else
+					std::this_thread::sleep_for(
+						std::chrono::microseconds(k_sleep_us));
 				continue;
 			}
 
@@ -56,11 +67,16 @@ namespace crystal::self
 					job = write->pop();
 					available_jobs->fetch_sub(1, std::memory_order_relaxed);
 					found = true;
-				}
+				} else ++fails;
 			}
 
 			if(found)
 				job.execute();
+			else if(fails < k_sleep_fails)
+				std::this_thread::yield();
+			else
+				std::this_thread::sleep_for(
+					std::chrono::microseconds(k_sleep_us));
 		}
 	}
 }

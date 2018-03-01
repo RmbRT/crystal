@@ -20,10 +20,14 @@ namespace crystal::self
 	{
 		do {
 			// fast availability check.
-			if(s_instance.m_available_jobs.load(std::memory_order_relaxed) != s_instance.m_execution.size())
+			// relaxed ordering because the lock will synchronise.
+			if(s_instance.m_available_jobs.load(std::memory_order_relaxed)
+			!= s_instance.m_execution.size())
 			{
+				// acquire lock.
 				auto write = s_instance.m_jobs.write();
 
+				// Is there still space available after locking?
 				if(!write->full())
 				{
 					if(barrier)
@@ -34,6 +38,8 @@ namespace crystal::self
 						write->emplace(
 							std::move(task));
 
+					// increment the number of available jobs.
+					// relaxed ordering because the lock synchronises upon destruction.
 					s_instance.m_available_jobs.fetch_add(1, std::memory_order_relaxed);
 
 					return;
@@ -41,7 +47,10 @@ namespace crystal::self
 			}
 		} while(force_async);
 
+		// no task was available, so execute the task on the calling thread.
 		task();
+
+		// notify the barrier.
 		if(barrier)
 			barrier->notify();
 	}

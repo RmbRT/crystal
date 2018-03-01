@@ -15,7 +15,7 @@ namespace crystal::self
 	{
 		/** The job's code. */
 		job_fn_t m_job_function;
-		/** An optional barrier to decrease after the job is done. */
+		/** An optional barrier to notify after the job is done. */
 		Barrier * m_barrier;
 	public:
 		Job() = default;
