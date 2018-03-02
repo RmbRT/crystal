@@ -33,6 +33,7 @@ namespace crystal::self
 		/** The execution units. */
 		std::vector<ExecutionUnit> m_execution;
 
+		/** The global instance. */
 		static Paralleliser s_instance;
 	public:
 		Paralleliser();

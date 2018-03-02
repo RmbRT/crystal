@@ -3,8 +3,7 @@
 namespace crystal::self
 {
 	ExecutionUnit::ExecutionUnit():
-		m_handle(),
-		m_should_stop(false)
+		m_handle()
 	{
 	}
 
@@ -15,14 +14,16 @@ namespace crystal::self
 
 	void ExecutionUnit::run(
 		lock::ThreadSafe<util::BoundedQueue<Job>> * jobs,
-		std::atomic_size_t * available_jobs)
+		std::atomic_size_t * available_jobs,
+		Spinner const& spinner)
 	{
 		if(!m_handle.joinable())
 			m_handle = std::thread(
 				ExecutionUnit::handle_requests,
 				this,
 				jobs,
-				available_jobs);
+				available_jobs,
+				spinner);
 		else
 			throw std::runtime_error("already running.");
 	}
@@ -37,27 +38,17 @@ namespace crystal::self
 	void ExecutionUnit::handle_requests(
 		ExecutionUnit * unit,
 		lock::ThreadSafe<util::BoundedQueue<Job>> * jobs,
-		std::atomic_size_t * available_jobs)
+		std::atomic_size_t * available_jobs,
+		Spinner spinner)
 	{
-		// the number of failed spins before sleeping.
-		static std::size_t const k_sleep_fails = 1000;
-		// the sleep duration in microseconds.
-		static std::size_t const k_sleep_us = 100;
+		// make sure that the stop flag is cleared.s
+		unit->m_should_stop.store(false, std::memory_order_relaxed);
 
-		std::size_t fails = 0;
 		Job job;
 		while(!unit->m_should_stop.load(std::memory_order_relaxed))
 		{
-			if(!available_jobs->load(std::memory_order_relaxed))
-			{
-				++fails;
-				if(fails < k_sleep_fails)
-					std::this_thread::yield();
-				else
-					std::this_thread::sleep_for(
-						std::chrono::microseconds(k_sleep_us));
+			if(!spinner.spin(available_jobs->load(std::memory_order_relaxed)))
 				continue;
-			}
 
 			bool found = false;
 			{
@@ -67,16 +58,11 @@ namespace crystal::self
 					job = write->pop();
 					available_jobs->fetch_sub(1, std::memory_order_relaxed);
 					found = true;
-				} else ++fails;
+				}
 			}
 
-			if(found)
+			if(spinner.spin(found))
 				job.execute();
-			else if(fails < k_sleep_fails)
-				std::this_thread::yield();
-			else
-				std::this_thread::sleep_for(
-					std::chrono::microseconds(k_sleep_us));
 		}
 	}
 }

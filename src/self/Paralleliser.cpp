@@ -10,7 +10,7 @@ namespace crystal::self
 		m_available_jobs(0)
 	{
 		for(auto & unit : m_execution)
-			unit.run(&m_jobs, &m_available_jobs);
+			unit.run(&m_jobs, &m_available_jobs, Spinner(150, 350, 75));
 	}
 
 	void Paralleliser::execute(
