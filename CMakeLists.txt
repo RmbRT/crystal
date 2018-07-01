@@ -17,8 +17,8 @@ file(GLOB_RECURSE crystal_headers ./src/*.hpp ./src/*.inl)
 # Add them to the Crystal library.
 add_library(crystal STATIC ${crystal_sources} ${crystal_headers})
 
-# Link the RmbRT Engine with GLFW.
-target_link_libraries(crystal pthread)
+# Link the Crystal library with pthreads and netlib.
+target_link_libraries(crystal pthread netlib)
 
 # Creates an include directory containing all header files used in the Crystal library
 # Add crystal/include/ to your include directories and access the files via #include <crystal/*>
