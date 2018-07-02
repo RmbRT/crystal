@@ -3,6 +3,26 @@
 
 namespace crystal::util
 {
+	ByteOrder const ByteOrder::kLittleEndian {
+		CompressedByteOrder {
+			{0x88, 0xc6, 0xfa},
+			{0x88, 0xc6, 0xfa},
+			{0xe4},
+			{0xe4},
+			{0x02}
+		}
+	};
+
+	ByteOrder const ByteOrder::kBigEndian {
+		CompressedByteOrder {
+			{0x77, 0x39, 0x05},
+			{0x77, 0x39, 0x05},
+			{0x1b},
+			{0x1b},
+			{0x01}
+		}
+	};
+
 	inline void set_bit(
 		void * bytes,
 		std::size_t bit,

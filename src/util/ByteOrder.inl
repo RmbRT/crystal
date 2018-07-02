@@ -43,6 +43,8 @@ namespace crystal::util
 					reinterpret_cast<std::uint8_t const*>(&m_order_16)[i]] =
 					reinterpret_cast<std::uint8_t*>(&v)[i];
 			}
+
+			return out;
 		}
 	}
 
@@ -61,6 +63,8 @@ namespace crystal::util
 					reinterpret_cast<std::uint8_t const*>(&m_order_32)[i]] =
 					reinterpret_cast<std::uint8_t*>(&v)[i];
 			}
+
+			return out;
 		}
 	}
 
@@ -99,6 +103,8 @@ namespace crystal::util
 					reinterpret_cast<std::uint8_t const*>(&m_order_float)[i]] =
 					reinterpret_cast<std::uint8_t*>(&v)[i];
 			}
+
+			return out;
 		}
 	}
 
@@ -117,6 +123,8 @@ namespace crystal::util
 					reinterpret_cast<std::uint8_t const*>(&m_order_double)[i]] =
 					reinterpret_cast<std::uint8_t*>(&v)[i];
 			}
+
+			return out;
 		}
 	}
 }

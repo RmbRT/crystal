@@ -76,6 +76,11 @@ namespace crystal::util
 		/** The host machine's byte order. */
 		static constexpr ByteOrder self();
 
+		/** Little endian byte order. */
+		static ByteOrder const kLittleEndian;
+		/** Big endian byte order. */
+		static ByteOrder const kBigEndian;
+
 		/** Converts a 16 bit integer. */
 		inline std::uint16_t convert_16(
 			std::uint16_t v) const;
