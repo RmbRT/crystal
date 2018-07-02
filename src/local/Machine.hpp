@@ -14,17 +14,13 @@ namespace crystal::local
 		@param[in] connection:
 			The connection to the local machine. */
 		Machine(
-			netlib::x::Connection && connection);
+			remote::SerialisedConnection && connection);
 
 		/** Connects to a local machine.
 		@param[in] address:
 			The local machine's address. */
 		Machine(
 			netlib::SocketAddress const& address);
-
-		using remote::Machine::send;
-		using remote::Machine::receive;
-		using remote::Machine::receive_pending;
 	};
 }
 

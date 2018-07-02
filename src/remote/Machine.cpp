@@ -6,11 +6,10 @@ namespace crystal::remote
 {
 	Machine::Machine(
 		Location location,
-		netlib::x::Connection && connection):
+		SerialisedConnection && connection):
 		crystal::Machine(
 			location),
-		netlib::x::Connection(std::move(connection)),
-		m_byte_order()
+		SerialisedConnection(std::move(connection))
 	{
 		if(!send_byte_order())
 			throw std::runtime_error("Failed to send byte order.");
@@ -23,9 +22,9 @@ namespace crystal::remote
 		netlib::SocketAddress const& address):
 		crystal::Machine(
 			location),
-		netlib::x::Connection(netlib::StreamSocket(address.family))
+		SerialisedConnection(netlib::StreamSocket(address.family))
 	{
-		if(!netlib::x::Connection::connect(address))
+		if(!SerialisedConnection::connect(address))
 			throw std::runtime_error("Connection failed.");
 		if(!receive_byte_order())
 			throw std::runtime_error("Failed to receive byte order.");
@@ -38,16 +37,18 @@ namespace crystal::remote
 	bool Machine::send_byte_order()
 	{
 		util::CompressedByteOrder compressed = util::ByteOrder::self().compress();
-		return send(&compressed, util::CompressedByteOrder::size());
+		return write(&compressed, util::CompressedByteOrder::size());
 	}
 
 	bool Machine::receive_byte_order()
 	{
 		util::CompressedByteOrder compressed;
-		if(receive(&compressed, util::CompressedByteOrder::size()))
+		if(read(&compressed, util::CompressedByteOrder::size()))
 		{
-			m_byte_order = compressed;
-			assert(m_byte_order.validate());
+			util::ByteOrder inflate { compressed };
+			assert(inflate.validate());
+
+			set_target_order(inflate);
 			return true;
 		} else
 			return false;

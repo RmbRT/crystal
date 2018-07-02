@@ -1,5 +1,10 @@
 namespace crystal::util
 {
+	Serialiser::operator bool() const
+	{
+		return m_good;
+	}
+
 	Serialiser &Serialiser::operator<<(
 		std::uint8_t v)
 	{
@@ -45,6 +50,11 @@ namespace crystal::util
 		v = m_byte_order.convert_double(v);
 		write(&v, 8);
 		return *this;
+	}
+
+	Deserialiser::operator bool() const
+	{
+		return m_good;
 	}
 
 	Deserialiser &Deserialiser::operator>>(

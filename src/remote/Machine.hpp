@@ -1,18 +1,15 @@
 #ifndef __crystal_remote_machine_hpp_defined
 #define __crystal_remote_machine_hpp_defined
 
-#include "../Machine.hpp"
-#include <netlib/x/Connection.hpp>
+#include "SerialisedConnection.hpp"
 
-#include "../util/ByteOrder.hpp"
+#include "../Machine.hpp"
 
 namespace crystal::remote
 {
 	/** A machine other than the host machine. */
-	class Machine : public crystal::Machine, protected netlib::x::Connection
+	class Machine : public crystal::Machine, protected SerialisedConnection
 	{
-		/** The machine's byte order. */
-		util::ByteOrder m_byte_order;
 	public:
 		Machine(Machine&&) = default;
 
@@ -23,7 +20,7 @@ namespace crystal::remote
 			A connection to the machine. */
 		Machine(
 			Location location,
-			netlib::x::Connection && connection);
+			SerialisedConnection && connection);
 
 		/** Connects to a remote machine.
 		@param[in] location:
@@ -36,10 +33,11 @@ namespace crystal::remote
 
 		virtual ~Machine() = 0;
 
-		using netlib::x::Connection::exists;
+		using SerialisedConnection::exists;
 
-		/** The machine's byte order. */
-		inline util::ByteOrder const& byte_order() const;
+		using SerialisedConnection::operator<<;
+		using SerialisedConnection::operator>>;
+
 	private:
 		/** Sends this machine's byte order.
 		@return

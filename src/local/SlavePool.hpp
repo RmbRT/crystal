@@ -29,14 +29,6 @@ namespace crystal::local
 		/** @return The number of slaves in the pool. */
 		inline std::size_t slaves() const;
 
-		/** Retrieves a slave's byte order.
-		@param[in] slave:
-			The slave's index.
-		@return
-			The slave's byte order. */
-		inline util::ByteOrder const& byte_order(
-			std::size_t slave) const;
-
 		/** Sends data to a slave.
 		@param[in] slave:
 			The slave's index.
@@ -46,10 +38,10 @@ namespace crystal::local
 			The size of the data.
 		@return
 			True on success. */
+		template<class T>
 		inline bool send(
 			std::size_t slave,
-			void const * data,
-			std::size_t size);
+			T const& data);
 
 		/** Receives data from a slave.
 		@param[in] slave:
@@ -60,33 +52,35 @@ namespace crystal::local
 			The size of the data.
 		@return
 			Whether it succeeded. */
+		template<class T>
 		inline bool receive(
 			std::size_t slave,
-			void * data,
-			std::size_t size);
+			T & data);
 
 		/** Broadcasts data to all slaves.
 		@param[in] data:
 			The data to send to each slave.
-		@param[in] size:
-			The size of the data.
+		@param[in] count:
+			The array size.
 		@return
 			True on success. */
+		template<class T>
 		bool broadcast(
-			void const * data,
-			std::size_t size);
+			T const * data,
+			std::size_t count);
 
 		/** Receives data from all slaves.
 		@param[out] data:
 			The data to receive from the slaves.
-			Must be of the size `slaves() * size`.
-		@param[in] size:
-			The size of the data to receive from each slave.
+			Must be an array of the size `slaves() * count`.
+		@param[in] count:
+			How many elements to gather from every slave.
 		@return
 			True on success. */
+		template<class T>
 		bool gather(
-			void * data,
-			std::size_t size);
+			T * data,
+			std::size_t count);
 	};
 }
 
