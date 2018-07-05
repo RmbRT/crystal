@@ -4,106 +4,156 @@
 #include <cinttypes>
 #include <cstddef>
 
+#include <cppeie/eie.hpp>
+
 namespace crystal::util
 {
-	/** The byte order of a computer, compressed into 9 bytes. */
-	struct CompressedByteOrder
+	/** Endianness values. */
+	enum class Endian : std::uint8_t
 	{
-		// 8 * 3 bits (log2(8) == 3).
-		/** The compressed byte order for doubles. */
-		std::uint8_t order_double[3];
-		/** The compressed byte order for 64 bit integers. */
-		std::uint8_t order_64[3];
-		// 4 * 2 bits (log2(4) = 2).
-		/** The compressed byte order for floats. */
-		std::uint8_t order_float[1];
-		/** The compressed byte order for 32 bit integers. */
-		std::uint8_t order_32[1];
-		// 2 * 1 bit (log2(2) = 1).
-		/** The compressed byte order for 16 bit integers. */
-		std::uint8_t order_16[1];
-
-		/** The size of the structure. */
-		static constexpr std::size_t size();
-	};
-
-	/** Represents a machine's byte order.
-		Can be used to convert values to or from a byte order. */
-	class ByteOrder
-	{
-		/** double byte order. */
-		double m_order_double;
-		/** 64 bit integer byte order. */
-		std::uint64_t m_order_64;
-		/** float byte order. */
-		float m_order_float;
-		/** 32 bit integer byte order. */
-		std::uint32_t m_order_32;
-		/** 16 bit integer byte order. */
-		std::uint16_t m_order_16;
-
-		/** Creates a byte order.
-		@param[in] order_double:
-			The double byte order.
-		@param[in] order_64:
-			The 64 bit integer byte order.
-		@param[in] order_float:
-			The float byte order.
-		@param[in] order_32:
-			The 32 bit integer byte order.
-		@param[in] order_16:
-			The 16 bit integer byte order. */
-		constexpr ByteOrder(
-			double order_double,
-			std::uint64_t order_64,
-			float order_float,
-			std::uint32_t order_32,
-			std::uint16_t order_16);
-	public:
-		ByteOrder() = default;
-
-		/** Parses a byte order from a compressed byte order.
-		@param[in] inflate:
-			The compressed byte order. */
-		ByteOrder(
-			CompressedByteOrder const& inflate);
-
-		/** Compresses the byte order for faster transmission.
-		@return
-			The compressed byte order. */
-		CompressedByteOrder compress() const;
-
-		/** The host machine's byte order. */
-		static constexpr ByteOrder self();
-
-		/** Little endian byte order. */
-		static ByteOrder const kLittleEndian;
-		/** Big endian byte order. */
-		static ByteOrder const kBigEndian;
-
-		/** Converts a 16 bit integer. */
-		inline std::uint16_t convert_16(
-			std::uint16_t v) const;
-		/** Converts a 32 bit integer. */
-		inline std::uint32_t convert_32(
-			std::uint32_t v) const;
-		/** Converts a 64 bit integer. */
-		inline std::uint64_t convert_64(
-			std::uint64_t v) const;
-		/** Converts a float. */
-		inline float convert_float(
-			float v) const;
-		/** Converts a double. */
-		inline double convert_double(
-			double v) const;
-
-		/** Validates a byte order.
-		@return
-			Whether every byte order is valid. */
-		bool validate() const;
+		/** Little endian. */
+		kLittle,
+		/** Big endian. */
+	EIE(kBig)
 	};
 }
 
+namespace crystal::util::endian
+{
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN) || \
+	defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \
+	defined(__BIG_ENDIAN__) || \
+	defined(__ARMEB__) || \
+	defined(__THUMBEB__) || \
+	defined(__AARCH64EB__) || \
+	defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+	constexpr Endian kSelf = Endian::kBig;
+#define ENDIANCVT constexpr
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+	defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
+	defined(__LITTLE_ENDIAN__) || \
+	defined(__ARMEL__) || \
+	defined(__THUMBEL__) || \
+	defined(__AARCH64EL__) || \
+	defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+	constexpr Endian kSelf = Endian::kLittle;
+#define ENDIANCVT constexpr
+#else
+	namespace detail
+	{
+		static constexpr union
+		{
+			std::uint16_t check;
+			std::uint8_t result[2];
+		} endianness { 1 };
+	}
+
+	static Endian const kSelf = detail::endianness.result[0] == 1
+		? Endian::kLittle
+			: Endian::kBig;
+#define ENDIANCVT inline
+#endif
+
+
+	constexpr std::uint16_t reverse_16(
+		std::uint16_t v);
+	constexpr std::uint32_t reverse_32(
+		std::uint32_t v);
+	constexpr std::uint64_t reverse_64(
+		std::uint64_t v);
+	constexpr float reverse_float(
+		float v);
+	constexpr float reverse_double(
+		double v);
+
+	template<Endian endian>
+	ENDIANCVT std::uint16_t convert_16(
+		std::uint16_t v);
+
+	template<Endian endian>
+	ENDIANCVT std::uint32_t convert_32(
+		std::uint32_t v);
+
+	template<Endian endian>
+	ENDIANCVT std::uint64_t convert_64(
+		std::uint64_t v);
+
+	template<Endian endian>
+	ENDIANCVT float convert_float(
+		float v);
+
+	template<Endian endian>
+	ENDIANCVT double convert_double(
+		double d);
+
+	template<Endian endian>
+	inline void convert_16(
+		std::uint16_t const * in,
+		std::uint16_t * out,
+		std::size_t size);
+
+	template<Endian endian>
+	inline void convert_32(
+		std::uint32_t const * in,
+		std::uint32_t * out,
+		std::size_t size);
+
+	template<Endian endian>
+	inline void convert_64(
+		std::uint64_t const * in,
+		std::uint64_t * out,
+		std::size_t size);
+
+	template<Endian endian>
+	inline void convert_float(
+		float const * in,
+		float * out,
+		std::size_t size);
+
+	template<Endian endian>
+	inline void convert_double(
+		double const * in,
+		double * out,
+		std::size_t size);
+
+	template<Endian endian>
+	inline void convert_16_par(
+		std::uint16_t const * in,
+		std::uint16_t * out,
+		std::size_t size,
+		std::size_t chunk_size = 0);
+
+	template<Endian endian>
+	inline void convert_32_par(
+		std::uint32_t const * in,
+		std::uint32_t * out,
+		std::size_t size,
+		std::size_t chunk_size = 0);
+
+	template<Endian endian>
+	inline void convert_64_par(
+		std::uint64_t const * in,
+		std::uint64_t * out,
+		std::size_t size,
+		std::size_t chunk_size = 0);
+
+	template<Endian endian>
+	inline void convert_float_par(
+		float const * in,
+		float * out,
+		std::size_t size,
+		std::size_t chunk_size = 0);
+
+	template<Endian endian>
+	inline void convert_double_par(
+		double const * in,
+		double * out,
+		std::size_t size,
+		std::size_t chunk_size = 0);
+}
+
 #include "ByteOrder.inl"
+
+#undef ENDIANCVT
 
 #endif

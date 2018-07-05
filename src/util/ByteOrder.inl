@@ -1,130 +1,298 @@
-namespace crystal::util
+#include <algorithm>
+#include "../self/Paralleliser.hpp"
+
+namespace crystal::util::endian
 {
-	constexpr std::size_t CompressedByteOrder::size()
+	constexpr std::uint16_t reverse_16(
+		std::uint16_t v)
 	{
-		return 9;
-	}
-	constexpr ByteOrder::ByteOrder(
-			double order_double,
-			std::uint64_t order_64,
-			float order_float,
-			std::uint32_t order_32,
-			std::uint16_t order_16):
-		m_order_double(order_double),
-		m_order_64(order_64),
-		m_order_float(order_float),
-		m_order_32(order_32),
-		m_order_16(order_16)
-	{
+		return (v << 8) | (v >> 8);
 	}
 
-	constexpr ByteOrder ByteOrder::self()
+	constexpr std::uint32_t reverse_32(
+		std::uint32_t v)
 	{
-		return ByteOrder(
-			0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000794992889512736253615566268553285340675338476556009692851631683095909725116229155007651506655011549819762651632490357850862619156912209691539383912386080152959007607165151845581748485352320987726499064146480118850009296246762535443466064333054562507972277777016152888533100483211597371351756917973939996730211835272977340454396316067101147446443224925142575972155309831163829325614052576156662841471257219688597206542432913798337105697228825649818615802998357281772873275667957953954230630363647261099462833213291010999020083818596436209242021586876817073591466975543876822788878454918453089230931334888899046711833077895764542436555526627901813174759126923163421452045440673828125,
-			0x0706050403020100,
-			0.0000000000000000000000000000000000003820471434542631889912843817899761562840137538567562969075465384438672344913356937468051910400390625f,
-			0x03020100,
-			0x0100);
+		return reverse_16(v<<16) | reverse_16(v>>16);
 	}
 
-	std::uint16_t ByteOrder::convert_16(
-		std::uint16_t v) const
+	constexpr std::uint64_t reverse_64(
+		std::uint64_t v)
 	{
-		if(m_order_16 == self().m_order_16)
-			return v;
-		else
+		return reverse_32(v<<32) | reverse_32(v>>32);
+	}
+
+	namespace detail
+	{
+		constexpr float to_float(
+			std::uint32_t u)
 		{
-			std::uint16_t out;
-
-			for(std::size_t i = 0; i < sizeof(v); i++)
-			{
-				reinterpret_cast<std::uint8_t*>(&out)[
-					reinterpret_cast<std::uint8_t const*>(&m_order_16)[i]] =
-					reinterpret_cast<std::uint8_t*>(&v)[i];
-			}
-
-			return out;
+			return reinterpret_cast<float const&>(u);
+		}
+		constexpr double to_double(
+			std::uint64_t u)
+		{
+			return reinterpret_cast<double const&>(u);
 		}
 	}
 
-	std::uint32_t ByteOrder::convert_32(
-		std::uint32_t v) const
+	constexpr float reverse_float(
+		float v)
 	{
-		if(m_order_32 == self().m_order_32)
-			return v;
-		else
-		{
-			std::uint32_t out;
-
-			for(std::size_t i = 0; i < sizeof(v); i++)
-			{
-				reinterpret_cast<std::uint8_t*>(&out)[
-					reinterpret_cast<std::uint8_t const*>(&m_order_32)[i]] =
-					reinterpret_cast<std::uint8_t*>(&v)[i];
-			}
-
-			return out;
-		}
+		return detail::to_float(
+			reverse_32(
+				reinterpret_cast<std::uint32_t const&>(v)));
 	}
 
-	std::uint64_t ByteOrder::convert_64(
-		std::uint64_t v) const
+	constexpr float reverse_double(
+		double v)
 	{
-		if(m_order_64 == self().m_order_64)
-			return v;
-		else
-		{
-			std::uint64_t out;
-
-			for(std::size_t i = 0; i < sizeof(v); i++)
-			{
-				reinterpret_cast<std::uint8_t*>(&out)[
-					reinterpret_cast<std::uint8_t const*>(&m_order_64)[i]] =
-					reinterpret_cast<std::uint8_t*>(&v)[i];
-			}
-
-			return out;
-		}
+		return detail::to_double(
+			reverse_64(
+				reinterpret_cast<std::uint64_t const&>(v)));
 	}
 
-	float ByteOrder::convert_float(
-		float v) const
+	template<Endian endian>
+	ENDIANCVT std::uint16_t convert_16(
+		std::uint16_t v)
 	{
-		if(m_order_float == self().m_order_float)
+		if(endian == kSelf)
 			return v;
 		else
-		{
-			float out;
-
-			for(std::size_t i = 0; i < sizeof(v); i++)
-			{
-				reinterpret_cast<std::uint8_t*>(&out)[
-					reinterpret_cast<std::uint8_t const*>(&m_order_float)[i]] =
-					reinterpret_cast<std::uint8_t*>(&v)[i];
-			}
-
-			return out;
-		}
+			return reverse_16(v);
 	}
 
-	double ByteOrder::convert_double(
-		double v) const
+	template<Endian endian>
+	ENDIANCVT std::uint32_t convert_32(
+		std::uint32_t v)
 	{
-		if(m_order_double == self().m_order_double)
+		if(endian == kSelf)
 			return v;
 		else
-		{
-			double out;
+			return reverse_32(v);
+	}
 
-			for(std::size_t i = 0; i < sizeof(v); i++)
+	template<Endian endian>
+	ENDIANCVT std::uint64_t convert_64(
+		std::uint64_t v)
+	{
+		if(endian == kSelf)
+			return v;
+		else
+			return reverse_64(v);
+	}
+
+	template<Endian endian>
+	ENDIANCVT float convert_float(
+		float v)
+	{
+		if(endian == kSelf)
+			return v;
+		else
+			return reverse_float(v);
+	}
+
+	template<Endian endian>
+	ENDIANCVT double convert_double(
+		double v)
+	{
+		if(endian == kSelf)
+			return v;
+		else
+			return reverse_double(v);
+	}
+
+	template<Endian endian>
+	void convert_16(
+		std::uint16_t const * in,
+		std::uint16_t * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse_16(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian>
+	void convert_32(
+		std::uint32_t const * in,
+		std::uint32_t * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse_32(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian>
+	void convert_64(
+		std::uint64_t const * in,
+		std::uint64_t * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse_64(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian>
+	void convert_float(
+		float const * in,
+		float * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse_float(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian>
+	void convert_double(
+		double const * in,
+		double * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse_double(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian>
+	void convert_16_par(
+		std::uint16_t const * in,
+		std::uint16_t * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				std::uint16_t const * in,
+				std::uint16_t * out)
 			{
-				reinterpret_cast<std::uint8_t*>(&out)[
-					reinterpret_cast<std::uint8_t const*>(&m_order_double)[i]] =
-					reinterpret_cast<std::uint8_t*>(&v)[i];
-			}
+				convert_16<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
+	}
 
-			return out;
-		}
+	template<Endian endian>
+	void convert_32_par(
+		std::uint32_t const * in,
+		std::uint32_t * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				std::uint32_t const * in,
+				std::uint32_t * out)
+			{
+				convert_32<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
+	}
+
+	template<Endian endian>
+	void convert_64_par(
+		std::uint64_t const * in,
+		std::uint64_t * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				std::uint64_t const * in,
+				std::uint64_t * out)
+			{
+				convert_64<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
+	}
+
+	template<Endian endian>
+	void convert_float_par(
+		float const * in,
+		float * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				float const * in,
+				float * out)
+			{
+				convert_float<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
+	}
+
+	template<Endian endian>
+	void convert_float_par(
+		double const * in,
+		double * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				double const * in,
+				double * out)
+			{
+				convert_double<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
 	}
 }

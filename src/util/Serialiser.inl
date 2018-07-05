@@ -1,106 +1,97 @@
 namespace crystal::util
 {
-	Serialiser::operator bool() const
-	{
-		return m_good;
-	}
-
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		std::uint8_t v)
 	{
-		write(&v, 1);
+		T::base(*this).serialise(&v, 1);
 		return *this;
 	}
 
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		std::uint16_t v)
 	{
-		v = m_byte_order.convert_16(v);
-		write(&v, 2);
+		v = endian::convert_16<kEndian>(v);
+		T::base(*this).serialise(&v, 2);
 		return *this;
 	}
 
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		std::uint32_t v)
 	{
-		v = m_byte_order.convert_32(v);
-		write(&v, 4);
+		v = endian::convert_32<kEndian>(v);
+		T::base(*this).serialise(&v, 4);
 		return *this;
 	}
 
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		std::uint64_t v)
 	{
-		v = m_byte_order.convert_64(v);
-		write(&v, 8);
+		v = endian::convert_64<kEndian>(v);
+		T::base(*this).serialise(&v, 8);
 		return *this;
 	}
 
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		float v)
 	{
-		v = m_byte_order.convert_float(v);
-		write(&v, 4);
+		v = endian::convert_float<kEndian>(v);
+		T::base(*this).serialise(&v, 4);
 		return *this;
 	}
 
-	Serialiser &Serialiser::operator<<(
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &Serialiser<kEndian, T>::operator<<(
 		double v)
 	{
-		v = m_byte_order.convert_double(v);
-		write(&v, 8);
+		v = endian::convert_double<kEndian>(v);
+		T::base(*this).serialise(&v, 8);
 		return *this;
 	}
 
-	Deserialiser::operator bool() const
+	template<class T>
+	constexpr Serialiser<Endian::kLittle, SerialiserUnion<T>> &SerialiserUnion<T>::little_serialiser()
 	{
-		return m_good;
+		return *static_cast<LittleSerialiser *>(this);
 	}
 
-	Deserialiser &Deserialiser::operator>>(
-		std::uint8_t &v)
+	template<class T>
+	constexpr Serialiser<Endian::kBig, SerialiserUnion<T>> &SerialiserUnion<T>::big_serialiser()
 	{
-		read(&v, 1);
-		return *this;
+		return *static_cast<BigSerialiser *>(this);
 	}
 
-	Deserialiser &Deserialiser::operator>>(
-		std::uint16_t &v)
+	template<class T>
+	constexpr SerialiserUnion<T> &SerialiserUnion<T>::base(
+		Serialiser<Endian::kLittle, SerialiserUnion<T>> &serialiser)
 	{
-		read(&v, 2);
-		v = m_byte_order.convert_16(v);
-		return *this;
+		return *static_cast<SerialiserUnion<T>*>(&serialiser);
 	}
 
-	Deserialiser &Deserialiser::operator>>(
-		std::uint32_t &v)
+	template<class T>
+	constexpr SerialiserUnion<T> &SerialiserUnion<T>::base(
+		Serialiser<Endian::kBig, SerialiserUnion<T>> &serialiser)
 	{
-		read(&v, 4);
-		v = m_byte_order.convert_32(v);
-		return *this;
+		return *static_cast<SerialiserUnion<T>*>(&serialiser);
 	}
 
-	Deserialiser &Deserialiser::operator>>(
-		std::uint64_t &v)
+	template<class T>
+	void SerialiserUnion<T>::serialise(
+		void const * data,
+		std::size_t size)
 	{
-		read(&v, 8);
-		v = m_byte_order.convert_64(v);
-		return *this;
+		return T::base(*this).serialise(data, size);
 	}
 
-	Deserialiser &Deserialiser::operator>>(
-		float &v)
+	template<Endian kEndian, class T>
+	Serialiser<kEndian, T> &operator<<(
+		Serialiser<kEndian, T> &s,
+		Endian v)
 	{
-		read(&v, 4);
-		v = m_byte_order.convert_float(v);
-		return *this;
-	}
-
-	Deserialiser &Deserialiser::operator>>(
-		double &v)
-	{
-		read(&v, 8);
-		v = m_byte_order.convert_double(v);
-		return *this;
+		return s << std::uint8_t(v);
 	}
 }

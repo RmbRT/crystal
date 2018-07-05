@@ -5,6 +5,8 @@
 
 #include "../Machine.hpp"
 
+#include <memory>
+
 namespace crystal::remote
 {
 	/** A machine other than the host machine. */
@@ -22,34 +24,12 @@ namespace crystal::remote
 			Location location,
 			SerialisedConnection && connection);
 
-		/** Connects to a remote machine.
-		@param[in] location:
-			The remote machine's location.
-		@param[in] address:
-			The remote machine's address. */
-		Machine(
-			Location location,
-			netlib::SocketAddress const& address);
-
 		virtual ~Machine() = 0;
 
 		using SerialisedConnection::exists;
-
 		using SerialisedConnection::operator<<;
 		using SerialisedConnection::operator>>;
-
-	private:
-		/** Sends this machine's byte order.
-		@return
-			Whether the transfer was successful. */
-		bool send_byte_order();
-		/** Receives this machine's byte order.
-		@return
-			Whether the transfer was successful. */
-		bool receive_byte_order();
 	};
 }
-
-#include "Machine.inl"
 
 #endif

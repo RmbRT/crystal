@@ -4,3 +4,6 @@
 [submodule "depend/netlib"]
 	path = depend/netlib
 	url = https://github.com/RmbRT/netlib
+[submodule "depend/cppeie"]
+	path = depend/cppeie
+	url = https://github.com/RmbRT/cppeie

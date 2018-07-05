@@ -6,7 +6,8 @@
 namespace crystal::outside
 {
 	/** An untrusted machine outside the local area network. */
-	class Machine : public remote::Machine
+	template<util::Endian kEndian>
+	class Machine : public remote::Machine<kEndian>
 	{
 	public:
 		virtual bool exchange_keys() = 0;
