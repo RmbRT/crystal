@@ -27,3 +27,4 @@ file(COPY "src/" DESTINATION "include/crystal/" FILES_MATCHING PATTERN "*.hpp" P
 # Add includes from dependencies into the include directory.
 file(COPY "depend/Lock/include/" DESTINATION "include/")
 file(COPY "depend/netlib/include/" DESTINATION "include/")
+file(COPY "depend/cppeie/include/" DESTINATION "include/")
