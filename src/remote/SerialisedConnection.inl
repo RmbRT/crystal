@@ -1,30 +1,5 @@
 namespace crystal::remote
 {
-	SerialisedConnection::SerialisedConnection(
-		netlib::x::Connection && connection,
-		util::Endian send,
-		util::Endian receive):
-		util::SerialiserUnion<SerialisedConnection>(),
-		util::DeserialiserUnion<SerialisedConnection>(),
-		netlib::x::Connection(std::move(connection)),
-		m_send(send),
-		m_receive(receive)
-	{
-	}
-
-	SerialisedConnection::SerialisedConnection(
-		netlib::x::Connection && connection,
-		util::Endian send):
-		util::SerialiserUnion<SerialisedConnection>(),
-		util::DeserialiserUnion<SerialisedConnection>(),
-		netlib::x::Connection(std::move(connection)),
-		m_send(send)
-	{
-		*this << m_send >> m_receive;
-		if(!eie::valid(m_receive))
-			throw std::runtime_error("Invalid endianness received.");
-	}
-
 	SerialisedConnection::LittleSerialiser &SerialisedConnection::little_serialiser()
 	{
 		assert(m_send == util::Endian::kLittle);
