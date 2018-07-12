@@ -8,6 +8,7 @@ namespace crystal::remote
 	SerialisedConnection::BigSerialiser &SerialisedConnection::big_serialiser()
 	{
 		assert(m_send == util::Endian::kBig);
+		return SerialiserUnion<SerialisedConnection>::big_serialiser();
 	}
 
 	SerialisedConnection::LittleDeserialiser &SerialisedConnection::little_deserialiser()
