@@ -35,6 +35,7 @@ namespace crystal::remote
 		using netlib::x::Connection::shutdown;
 		using netlib::x::Connection::close;
 		using netlib::x::Connection::operator bool;
+		using netlib::x::Connection::pending;
 
 		// Serialiser and Deserialiser.
 		using SerialiserUnion<SerialisedConnection>::LittleSerialiser;
