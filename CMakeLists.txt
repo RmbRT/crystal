@@ -3,7 +3,8 @@ project(Crystal)
 
 # Ensure all dependencies are existent.
 execute_process(
-	COMMAND "git submodule init && git submodule update"
+	COMMAND git submodule init
+	COMMAND git submodule update
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	OUTPUT_QUIET)
 
