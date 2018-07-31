@@ -92,7 +92,7 @@ namespace crystal::util::endian
 
 	template<Endian endian, class T>
 	inline T convert(
-		T const& v);
+		T v);
 
 	template<Endian endian>
 	inline void convert_16(
