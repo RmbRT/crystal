@@ -5,8 +5,7 @@ project(Crystal)
 execute_process(
 	COMMAND git submodule init
 	COMMAND git submodule update
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT_QUIET)
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(depend/netlib)
 
