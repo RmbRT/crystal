@@ -137,8 +137,8 @@ namespace crystal::util::endian
 	}
 
 	template<Endian endian, class T>
-	inline std::uint16_t convert(
-		std::uint16_t v)
+	inline T convert(
+		T v)
 	{
 		if(endian == kSelf)
 			return v;
