@@ -66,6 +66,10 @@ namespace crystal::util::endian
 	constexpr float reverse_double(
 		double v);
 
+	template<class T>
+	constexpr T reverse(
+		T v);
+
 	template<Endian endian>
 	ENDIANCVT std::uint16_t convert_16(
 		std::uint16_t v);
@@ -85,6 +89,10 @@ namespace crystal::util::endian
 	template<Endian endian>
 	ENDIANCVT double convert_double(
 		double d);
+
+	template<Endian endian, class T>
+	inline T convert(
+		T const& v);
 
 	template<Endian endian>
 	inline void convert_16(
@@ -114,6 +122,12 @@ namespace crystal::util::endian
 	inline void convert_double(
 		double const * in,
 		double * out,
+		std::size_t size);
+
+	template<Endian endian, class T>
+	inline void convert(
+		T const * in,
+		T * out,
 		std::size_t size);
 
 	template<Endian endian>
@@ -150,6 +164,13 @@ namespace crystal::util::endian
 		double * out,
 		std::size_t size,
 		std::size_t chunk_size = 0);
+
+	template<Endian endian, class T>
+	inline void convert_par(
+		T const * in,
+		T * out,
+		std::size_t size,
+		std::size_t chunk_size);
 }
 
 #include "ByteOrder.inl"

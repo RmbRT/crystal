@@ -51,6 +51,41 @@ namespace crystal::util::endian
 				reinterpret_cast<std::uint64_t const&>(v)));
 	}
 
+	template<>
+	constexpr std::uint16_t reverse<std::uint16_t>(
+		std::uint16_t v)
+	{
+		return reverse_16(v);
+	}
+
+	template<>
+	constexpr std::uint32_t reverse<std::uint32_t>(
+		std::uint32_t v)
+	{
+		return reverse_32(v);
+	}
+
+	template<>
+	constexpr std::uint64_t reverse<std::uint64_t>(
+		std::uint64_t v)
+	{
+		return reverse_64(v);
+	}
+
+	template<>
+	constexpr float reverse<float>(
+		float v)
+	{
+		return reverse_float(v);
+	}
+
+	template<>
+	constexpr double reverse<double>(
+		double v)
+	{
+		return reverse_double(v);
+	}
+
 	template<Endian endian>
 	ENDIANCVT std::uint16_t convert_16(
 		std::uint16_t v)
@@ -99,6 +134,16 @@ namespace crystal::util::endian
 			return v;
 		else
 			return reverse_double(v);
+	}
+
+	template<Endian endian, class T>
+	inline std::uint16_t convert(
+		std::uint16_t v)
+	{
+		if(endian == kSelf)
+			return v;
+		else
+			return reverse<T>(v);
 	}
 
 	template<Endian endian>
@@ -162,6 +207,19 @@ namespace crystal::util::endian
 		if(endian != kSelf)
 			for(std::size_t i = 0; i < size; i++)
 				out[i] = reverse_double(in[i]);
+		else if(in != out)
+			std::copy(in, in+size, out);
+	}
+
+	template<Endian endian, class T>
+	void convert(
+		T const * in,
+		T * out,
+		std::size_t size)
+	{
+		if(endian != kSelf)
+			for(std::size_t i = 0; i < size; i++)
+				out[i] = reverse<T>(in[i]);
 		else if(in != out)
 			std::copy(in, in+size, out);
 	}
@@ -271,7 +329,7 @@ namespace crystal::util::endian
 	}
 
 	template<Endian endian>
-	void convert_float_par(
+	void convert_double_par(
 		double const * in,
 		double * out,
 		std::size_t size,
@@ -288,6 +346,32 @@ namespace crystal::util::endian
 				double * out)
 			{
 				convert_double<endian>(
+					in+begin,
+					out+begin,
+					count);
+			},
+			in,
+			out);
+	}
+
+	template<Endian endian, class T>
+	void convert_par(
+		T const * in,
+		T * out,
+		std::size_t size,
+		std::size_t chunk_size)
+	{
+		self::Paralleliser::loop_chunks(
+			0,
+			size,
+			chunk_size,
+			[](
+				std::size_t begin,
+				std::size_t count,
+				T const * in,
+				T * out)
+			{
+				convert<endian, T>(
 					in+begin,
 					out+begin,
 					count);

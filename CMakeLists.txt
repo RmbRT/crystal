@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 project(Crystal)
 
+# Ensure all dependencies are existent.
+execute_process(
+	COMMAND "git submodule init && git submodule update"
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT_QUIET)
+
 add_subdirectory(depend/netlib)
 
 # Set the C++ standard used by the Crystal library.
