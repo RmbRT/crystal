@@ -13,12 +13,12 @@ namespace crystal::remote
 
 	SerialisedConnection::LittleDeserialiser &SerialisedConnection::little_deserialiser()
 	{
-		assert(m_send == util::Endian::kLittle);
+		assert(m_receive == util::Endian::kLittle);
 		return DeserialiserUnion<SerialisedConnection>::little_deserialiser();
 	}
 	SerialisedConnection::BigDeserialiser &SerialisedConnection::big_deserialiser()
 	{
-		assert(m_send == util::Endian::kBig);
+		assert(m_receive == util::Endian::kBig);
 		return DeserialiserUnion<SerialisedConnection>::big_deserialiser();
 	}
 
@@ -26,6 +26,8 @@ namespace crystal::remote
 	SerialisedConnection &SerialisedConnection::operator<<(
 		T const& value)
 	{
+		assert(eie::valid(m_send));
+
 		if(m_send == util::Endian::kLittle)
 			little_serialiser() << value;
 		else
@@ -38,6 +40,8 @@ namespace crystal::remote
 	SerialisedConnection &SerialisedConnection::operator>>(
 		T & value)
 	{
+		assert(eie::valid(m_receive));
+
 		if(m_receive == util::Endian::kLittle)
 			little_deserialiser() >> value;
 		else
