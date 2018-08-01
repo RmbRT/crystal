@@ -3,6 +3,16 @@
 namespace crystal::util
 {
 	SerialisedFile::SerialisedFile(
+		SerialisedFile && move):
+		std::fstream(std::move(move)),
+		DeserialiserUnion<SerialisedFile>(std::move(move)),
+		SerialiserUnion<SerialisedFile>(std::move(move)),
+		m_endian(move.m_endian),
+		m_has_dynamic_endian(move.m_has_dynamic_endian)
+	{
+	}
+
+	SerialisedFile::SerialisedFile(
 		char const * file,
 		OpenMode mode,
 		Endian endian)
@@ -71,6 +81,8 @@ namespace crystal::util
 	{
 		if(is_open())
 			close();
+
+		m_has_dynamic_endian = mode & OpenMode::kDynamicEndian;
 
 		if(mode & OpenMode::kCreate)
 		{

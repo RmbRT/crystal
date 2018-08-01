@@ -80,6 +80,13 @@ namespace crystal::util
 
 		SerialisedFile() = default;
 
+		// std::fstream deletes the default move constructor.
+		SerialisedFile(
+			SerialisedFile &&move);
+
+		SerialisedFile &operator=(
+			SerialisedFile &&move) = default;
+
 		/** Opens a file with a predefined endianness.
 		@param[in] file:
 			The file to open.
