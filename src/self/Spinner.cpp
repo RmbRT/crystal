@@ -19,11 +19,11 @@ namespace crystal::self
 	{
 		if(success)
 			m_fails = 0;
-		else if(++m_fails > m_yield_count)
-			std::this_thread::yield();
-		else if(m_fails > m_sleep_count)
+		else if(++m_fails > m_sleep_count)
 			std::this_thread::sleep_for(
 				std::chrono::microseconds(m_sleep_us));
+		else if(m_fails > m_yield_count)
+			std::this_thread::yield();
 
 		return success;
 	}

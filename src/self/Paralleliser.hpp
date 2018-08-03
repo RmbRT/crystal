@@ -70,7 +70,7 @@ namespace crystal::self
 			The iteration count.
 		@param[in] chunk_size:
 			The size of chunks. If `0`, then the chunk size is as big as possible. If bigger than `iterations`, it is set to `iterations`.
-		@param[in] loop:
+		@param[in] iteration:
 			The iteration function. Must be thread safe. It must have the following signature: `void (std::size_t i, Args const&...args)` and should represent an iteration over a single element.
 		@param[in] args:
 			The additional arguments to pass to `loop`. */

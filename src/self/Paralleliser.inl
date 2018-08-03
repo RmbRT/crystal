@@ -4,7 +4,7 @@ namespace crystal::self
 {
 	std::size_t Paralleliser::hardware_concurrency()
 	{
-		std::size_t concurrency = std::thread::hardware_concurrency();
+		static std::size_t concurrency = std::thread::hardware_concurrency();
 		if(!concurrency)
 			throw std::runtime_error("Hardware concurrency not detectable");
 		return concurrency;
@@ -18,33 +18,37 @@ namespace crystal::self
 		Callable loop,
 		Args const& ...args)
 	{
-		// the maximum supported concurrent job count.
+		// Ignore empty tasks.
+		if(!iterations)
+			return;
+
+		// The maximum supported concurrent job count.
 		std::size_t max_supported_jobs = Paralleliser::hardware_concurrency();
 
-		// cap chunk size to iteration count.
+		// Cap chunk size to iteration count.
 		if(chunk_size > iterations)
 			chunk_size = iterations;
 
-		// the needed job count.
+		// The needed job count.
 		std::size_t jobs = chunk_size
 			? iterations / chunk_size
 			: max_supported_jobs;
 
-		// do not allocate more jobs than iterations.
+		// Do not allocate more jobs than iterations.
 		if(max_supported_jobs > iterations)
 			jobs = iterations;
 
-		// the iterations per job.
+		// The iterations per job.
 		std::size_t job_size = iterations / jobs;
-		// the number of left-over iterations.
+		// The number of left-over iterations.
 		std::size_t distribute = iterations % jobs;
 
 		// Create the synchronisation barrier.
 		Barrier barrier{jobs, false};
 
-		// so that the new job size doesn't have to be recalculated.
+		// So that the new job size doesn't have to be recalculated.
 		std::size_t const inc_job_size = job_size + 1;
-		// create bigger jobs with left-over iterations.
+		// Create bigger jobs with left-over iterations.
 		for(std::size_t i = distribute; i--; begin += inc_job_size)
 			Paralleliser::execute(
 				[&loop, begin, inc_job_size, &args...]() {
@@ -56,8 +60,8 @@ namespace crystal::self
 				&barrier,
 				false);
 
-		// create normal-sized jobs.
-		for(std::size_t i = jobs - distribute; i--; begin += job_size)
+		// Create normal-sized jobs (except the last job).
+		for(std::size_t i = jobs - distribute - 1; i--; begin += job_size)
 			Paralleliser::execute(
 				[&loop, begin, job_size, &args...]() {
 					loop(
@@ -68,7 +72,16 @@ namespace crystal::self
 				&barrier,
 				false);
 
-		// wait for execution to finish.
+		// Execute the last job on the main thread.
+		loop(
+			begin,
+			job_size,
+			args...);
+
+		// Notify the barrier (this is needed for synchronising() barriers).
+		barrier.notify();
+
+		// Wait for execution to finish.
 		barrier.wait();
 	}
 

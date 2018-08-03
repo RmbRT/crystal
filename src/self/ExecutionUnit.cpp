@@ -41,7 +41,7 @@ namespace crystal::self
 		std::atomic_size_t * available_jobs,
 		Spinner spinner)
 	{
-		// make sure that the stop flag is cleared.s
+		// Make sure that the stop flag is cleared.
 		unit->m_should_stop.store(false, std::memory_order_relaxed);
 
 		Job job;
