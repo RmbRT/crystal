@@ -66,7 +66,7 @@ namespace crystal::remote
 		void const * data,
 		std::size_t size)
 	{
-		if(!send(data, size))
+		if(!send_all(data, size))
 			throw std::runtime_error("Failed to send data.");
 	}
 
@@ -74,7 +74,7 @@ namespace crystal::remote
 		void * data,
 		std::size_t size)
 	{
-		if(!receive(data, size))
+		if(!receive_all(data, size))
 			throw std::runtime_error("Failed to receive data.");
 	}
 
