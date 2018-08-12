@@ -28,10 +28,12 @@ namespace crystal::self
 	{
 		/** To efficiently check for available jobs. */
 		std::atomic_size_t m_available_jobs;
+		/** How many workers are currently active. */
+		std::atomic_size_t m_active_workers;
 		/** The job list. */
 		lock::ThreadSafe<util::BoundedQueue<Job>> m_jobs;
 		/** The execution units. */
-		std::vector<ExecutionUnit> m_execution;
+		lock::ThreadSafe<std::vector<ExecutionUnit>> m_execution;
 
 		/** The global instance. */
 		static Paralleliser s_instance;
@@ -251,6 +253,12 @@ namespace crystal::self
 			bool force_async = false);
 
 		static inline std::size_t hardware_concurrency();
+
+		/** Stops all workers.
+		@param[in] wait:
+			Whether to wait until all workers finished shutting down. */
+		static void stop_workers(
+			bool wait);
 	};
 }
 

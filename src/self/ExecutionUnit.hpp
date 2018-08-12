@@ -17,6 +17,8 @@ namespace crystal::self
 		std::thread m_handle;
 		/** Whether the worker thread should stop. */
 		std::atomic<bool> m_should_stop;
+		/** Whether the worker is currently handling a task. */
+		std::atomic<bool> m_busy;
 	public:
 		/** Initialises the execution unit but does not start the worker thread. */
 		ExecutionUnit();
@@ -37,8 +39,16 @@ namespace crystal::self
 			lock::ThreadSafe<util::BoundedQueue<Job>> * jobs,
 			std::atomic_size_t * available_jobs,
 			Spinner const& spinner);
+
+		/** If the worker thread is running, signals it to stop, but does not wait for it. */
+		void request_stop();
 		/** If the worker thread is running, signals it to stop and waits for it to finish. */
 		void stop();
+
+		/** Checks whether the execution unit is working. */
+		inline bool running() const;
+		/** Checks whether the execution unit is currently busy with a job. */
+		inline bool busy() const;
 	private:
 		/** The worker thread function.
 		@param[in] unit:
@@ -56,5 +66,7 @@ namespace crystal::self
 			Spinner spinner);
 	};
 }
+
+#include "ExecutionUnit.inl"
 
 #endif
