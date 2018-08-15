@@ -12,6 +12,7 @@ namespace crystal::remote
 		m_send(send),
 		m_receive(receive)
 	{
+		set_async(false);
 	}
 
 	SerialisedConnection::SerialisedConnection(
@@ -22,6 +23,7 @@ namespace crystal::remote
 		netlib::x::Connection(std::move(connection)),
 		m_send(send)
 	{
+		set_async(false);
 		exchange_byte_order();
 	}
 
