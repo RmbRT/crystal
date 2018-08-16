@@ -52,6 +52,13 @@ namespace crystal::util::endian
 	}
 
 	template<>
+	constexpr std::uint8_t reverse<std::uint8_t>(
+		std::uint8_t v)
+	{
+		return v;
+	}
+
+	template<>
 	constexpr std::uint16_t reverse<std::uint16_t>(
 		std::uint16_t v)
 	{

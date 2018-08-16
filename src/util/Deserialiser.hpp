@@ -1,6 +1,11 @@
 #ifndef __crystal_util_deserialiser_hpp_defined
 #define __crystal_util_deserialiser_hpp_defined
 
+#include "ByteOrder.hpp"
+
+#include <netlib/x/BufferedConnection.hpp>
+#include <netlib/async/Receive.hpp>
+
 namespace crystal::util
 {
 	/** Deserialises data.
@@ -27,6 +32,28 @@ namespace crystal::util
 		inline Deserialiser<kEndian, T> &operator>>(
 			double &v);
 	};
+
+	template<class T, Endian kEndian>
+	/** Coroutine for deserialising primitive datatypes over buffered connections.
+	@tparam T:
+		The primitive type to send.
+	@tparam kEndian:
+		The destination endianness. */
+	COROUTINE(ReceivePrimitive)
+		/** Prepares the coroutine for execution.
+		@param[in] connection:
+			The connection to receive the data with.
+		@param[in] data:
+			The data to receive. */
+		void prepare(
+			netlib::x::BufferedConnection &connection,
+			T &data);
+	CR_STATE
+		/** The receive coroutine. */
+		netlib::async::BufferedReceive receive;
+		/** The data to receive. */
+		T * data;
+	CR_EXTERNAL();
 
 	template<class T>
 	class DeserialiserUnion:

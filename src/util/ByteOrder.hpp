@@ -50,7 +50,7 @@ namespace crystal::util::endian
 
 	static Endian const kSelf = detail::endianness.result[0] == 1
 		? Endian::kLittle
-			: Endian::kBig;
+		: Endian::kBig;
 #define ENDIANCVT inline
 #endif
 

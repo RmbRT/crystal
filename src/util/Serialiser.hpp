@@ -3,6 +3,9 @@
 
 #include "ByteOrder.hpp"
 
+#include <netlib/x/BufferedConnection.hpp>
+#include <netlib/async/Send.hpp>
+
 namespace crystal::util
 {
 	/** Serialises data.
@@ -28,6 +31,29 @@ namespace crystal::util
 			float v);
 		inline Serialiser<kEndian, T> &operator<<(
 			double v);
+	};
+
+	template<class T, Endian kEndian>
+	/** Coroutine for serialising primitive datatypes over buffered connections.
+	@tparam T:
+		The primitive type to send.
+	@tparam kEndian:
+		The destination endianness. */
+	class SendPrimitive : netlib::async::BufferedSend
+	{
+		/** Prepares the coroutine for execution.
+		@param[in] connection:
+			The connection to send the data with.
+		@param[in] data:
+			The data to send. */
+		void prepare(
+			netlib::x::BufferedConnection &connection,
+			T data);
+
+		using netlib::async::BufferedSend::operator();
+	private:
+		/** The data to send. */
+		T data;
 	};
 
 	template<class T>

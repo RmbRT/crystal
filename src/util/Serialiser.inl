@@ -65,6 +65,18 @@ namespace crystal::util
 		return *static_cast<BigSerialiser *>(this);
 	}
 
+	template<class T, Endian kEndian>
+	void SendPrimitive<T, kEndian>::prepare(
+		netlib::x::BufferedConnection &connection,
+		T data)
+	{
+		this->data = endian::convert<kEndian>(data);
+		netlib::async::BufferedSend::prepare(
+			connection,
+			&data,
+			sizeof(T));
+	}
+
 	template<class T>
 	constexpr SerialiserUnion<T> &SerialiserUnion<T>::base(
 		Serialiser<Endian::kLittle, SerialiserUnion<T>> &serialiser)

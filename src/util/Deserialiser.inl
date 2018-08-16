@@ -53,6 +53,29 @@ namespace crystal::util
 		return *this;
 	}
 
+	template<class T, Endian kEndian>
+	void ReceivePrimitive<T, kEndian>::prepare(
+		netlib::x::BufferedConnection &connection,
+		T &data)
+	{
+		Coroutine::prepare();
+		this->data = &data;
+		receive.prepare(
+			connection,
+			&data,
+			sizeof(T));
+	}
+
+	template<class T, Endian kEndian>
+#define NAME ReceivePrimitive<T, kEndian>
+	CR_IMPL_BEGIN(NAME)
+		CR_CALL(receive);
+
+		if(kEndian != endian::kSelf)
+			*data = endian::convert<kEndian>(*data);
+	CR_IMPL_END
+#undef NAME
+
 	template<class T>
 	constexpr Deserialiser<Endian::kLittle, DeserialiserUnion<T>> &DeserialiserUnion<T>::little_deserialiser()
 	{
