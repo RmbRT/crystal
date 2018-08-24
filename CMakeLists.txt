@@ -31,6 +31,7 @@ target_link_libraries(crystal pthread netlib)
 # Creates an include directory containing all header files used in the Crystal library
 # Add crystal/include/ to your include directories and access the files via #include <crystal/*>
 file(COPY "src/" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/crystal/ FILES_MATCHING PATTERN "*.hpp" PATTERN "*.inl")
+file(COPY "LICENSE" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/crystal/)
 
 # Add includes from dependencies into the include directory.
 file(COPY "depend/Lock/include/" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/)
