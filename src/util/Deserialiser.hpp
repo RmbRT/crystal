@@ -39,7 +39,7 @@ namespace crystal::util
 		The primitive type to send.
 	@tparam kEndian:
 		The destination endianness. */
-	COROUTINE(ReceivePrimitive)
+	TEMPLATE_COROUTINE(ReceivePrimitive, (T, kEndian))
 		/** Prepares the coroutine for execution.
 		@param[in] connection:
 			The connection to receive the data with.
@@ -48,12 +48,26 @@ namespace crystal::util
 		void prepare(
 			netlib::x::BufferedConnection &connection,
 			T &data);
+
+		/** Prepares the coroutine for execution.
+		@param[in] connection:
+			The connection to receive the data with.
+		@param[in] data:
+			The data to receive.
+		@param[in] parent:
+			The parent coroutine. */
+		void prepare(
+			netlib::x::BufferedConnection &connection,
+			T &data,
+			cr::Coroutine * parent);
 	CR_STATE
 		/** The receive coroutine. */
 		netlib::async::BufferedReceive receive;
 		/** The data to receive. */
 		T * data;
-	CR_EXTERNAL();
+		/** The connection to receive data with. */
+		netlib::x::BufferedConnection * connection;
+	CR_EXTERNAL;
 
 	template<class T>
 	class DeserialiserUnion:

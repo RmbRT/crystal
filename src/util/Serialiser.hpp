@@ -41,6 +41,7 @@ namespace crystal::util
 		The destination endianness. */
 	class SendPrimitive : netlib::async::BufferedSend
 	{
+		friend class cr::ExposeCoroutine;
 		/** Prepares the coroutine for execution.
 		@param[in] connection:
 			The connection to send the data with.
@@ -49,6 +50,10 @@ namespace crystal::util
 		void prepare(
 			netlib::x::BufferedConnection &connection,
 			T data);
+		void prepare(
+			netlib::x::BufferedConnection &connection,
+			T data,
+			cr::Coroutine * parent);
 
 		using netlib::async::BufferedSend::operator();
 	private:

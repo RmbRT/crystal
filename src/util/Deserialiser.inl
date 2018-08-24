@@ -58,7 +58,7 @@ namespace crystal::util
 		netlib::x::BufferedConnection &connection,
 		T &data)
 	{
-		Coroutine::prepare();
+		LibCrBase::prepare();
 		this->data = &data;
 		receive.prepare(
 			connection,
@@ -67,14 +67,26 @@ namespace crystal::util
 	}
 
 	template<class T, Endian kEndian>
-#define NAME ReceivePrimitive<T, kEndian>
-	CR_IMPL_BEGIN(NAME)
-		CR_CALL(receive);
+	void ReceivePrimitive<T, kEndian>::prepare(
+		netlib::x::BufferedConnection &connection,
+		T &data,
+		cr::Coroutine * parent)
+	{
+		LibCrBase::prepare(parent);
+		this->data = &data;
+		this->connection = connection;
+	}
+
+	template<class T, Endian kEndian>
+	CR_IMPL(ReceivePrimitive<T, kEndian>)
+		CR_CALL(receive,
+			*connection,
+			data,
+			sizeof(T));
 
 		if(kEndian != endian::kSelf)
 			*data = endian::convert<kEndian>(*data);
 	CR_IMPL_END
-#undef NAME
 
 	template<class T>
 	constexpr Deserialiser<Endian::kLittle, DeserialiserUnion<T>> &DeserialiserUnion<T>::little_deserialiser()

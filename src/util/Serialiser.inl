@@ -77,6 +77,20 @@ namespace crystal::util
 			sizeof(T));
 	}
 
+	template<class T, Endian kEndian>
+	void SendPrimitive<T, kEndian>::prepare(
+		netlib::x::BufferedConnection &connection,
+		T data,
+		cr::Coroutine * parent)
+	{
+		this->data = endian::convert<kEndian>(data);
+		netlib::async::BufferedSend::prepare(
+			connection,
+			&data,
+			sizeof(T),
+			parent);
+	}
+
 	template<class T>
 	constexpr SerialiserUnion<T> &SerialiserUnion<T>::base(
 		Serialiser<Endian::kLittle, SerialiserUnion<T>> &serialiser)
